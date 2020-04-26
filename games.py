@@ -8,66 +8,53 @@ from pysndfx import AudioEffectsChain
 
 from myEventObject import GUI_EVENT
 from mygui import GUI
+import audio_process_functions
 
 
 class Game:
-    def __init__(self):
-        self.panValue = None
-        self.proc_sound = None
-        self.gui_event = GUI_EVENT()
-        self.gui = GUI(self.gui_event)
-        self.audio_ready = self.gui.getAudioReady()
+    def __init__(self, audio_ready, gui_event):
+        self.gui_event = gui_event
+        self.audio_ready = audio_ready
         self.quit = False
-
-    def getSoundFromRandomFile(self):
-        file_name = self.getRandomFile()
-        if file_name.endswith("wav"):
-            return AudioSegment.from_wav(file=file_name)
-        elif file_name.endswith("mp3"):
-            return AudioSegment.from_mp3(file=file_name)
-
-    def playFile(self, file):
-        winsound.PlaySound(file, winsound.SND_ASYNC | winsound.SND_ALIAS)
-
-    def stop(self):
-        winsound.PlaySound(None, winsound.SND_ASYNC)
-
-    def exportFile(self):
-        self.proc_sound.export("processed.wav", format="wav")
+        self.processAudio = None
 
     def getRandomFile(self):
         return "songs/" + random.choice(os.listdir("songs/"))
 
     def playRound(self):
-        self.playFile("processed.wav")
-        self.audio_ready.set(self.panValue)
+        # create processed audio file
+        target = self.processAudio(file_name=self.getRandomFile())
+        audio_process_functions.playFile("processed.wav")
+        # signal to GUI that audio is playing
+        self.audio_ready.set(target)
 
+        # wait for answer from user
         self.gui_event.wait()
-        self.stop()
+        audio_process_functions.stop()
         if self.gui_event.quit:
             self.quit = True
             return
         self.gui_event.clear()
         if self.gui_event.success:
-            self.playFile("sounds/woohoo.wav")
+            audio_process_functions.playFile("sounds/woohoo.wav")
         else:
-            self.playFile("sounds/doh.wav")
+            audio_process_functions.playFile("sounds/doh.wav")
         sleep(1)
 
 
-class PanGame(Game):
-    def processFile(self):
-        self.sound = self.getSoundFromRandomFile()
-        self.panValue = random.uniform(-1, 1)
-        # cut to 30 seconds, set to mono and pan
-        self.sound = self.sound.set_channels(1)[:30 * 1000]
-        self.proc_sound = self.sound.pan(self.panValue)
-
-        self.exportFile()
-
-    def playRound(self):
-        self.processFile()
-        super().playRound()
+# class PanGame(Game):
+#     def processFile(self):
+#         self.sound = self.getSoundFromRandomFile()
+#         self.panValue = random.uniform(-1, 1)
+#         # cut to 30 seconds, set to mono and pan
+#         self.sound = self.sound.set_channels(1)[:30 * 1000]
+#         self.proc_sound = self.sound.pan(self.panValue)
+#
+#         self.exportFile()
+#
+#     def playRound(self):
+#         self.processFile()
+#         super().playRound()
 
 
 class EqGame(Game):
@@ -84,7 +71,7 @@ class EqGame(Game):
         self.playFile("processed.wav")
 
     def test(self):
-        #cut file
+        # cut file
         self.sound = self.getSoundFromRandomFile()
         self.proc_sound = self.sound[:30 * 1000]
         self.exportFile()
