@@ -1,0 +1,5 @@
+TODO:
+
+background image for EQ
+turn EQ on and off using button
+score

@@ -2,10 +2,11 @@ import random
 import winsound
 
 from pydub import AudioSegment
+from pysndfx import AudioEffectsChain
 
 
-def exportFile(proc_sound):
-    proc_sound.export("processed.wav", format="wav")
+def exportFile(proc_sound, output_file="processed.wav"):
+    proc_sound.export(output_file, format="wav")
 
 
 def playFile(file):
@@ -31,3 +32,15 @@ def pan(file_name):
     proc_sound = sound.pan(pan_value)
     exportFile(proc_sound)
     return pan_value
+
+
+def eq(file_name):
+    # cut file
+    sound = sound = getSoundFromFile(file_name)
+    proc_sound = sound[:30 * 1000]
+    exportFile(proc_sound, "tmp.wav")
+    # apply eq
+    f = 1000
+    fx = (AudioEffectsChain().equalizer(f, q=2, db=10.0))
+    fx("tmp.wav", "processed.wav")
+    return f

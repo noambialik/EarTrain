@@ -1,13 +1,7 @@
 import os
 import random
-import winsound
 from time import sleep
 
-from pydub import AudioSegment
-from pysndfx import AudioEffectsChain
-
-from myEventObject import GUI_EVENT
-from mygui import GUI
 import audio_process_functions
 
 
@@ -57,31 +51,31 @@ class Game:
 #         super().playRound()
 
 
-class EqGame(Game):
-    def __init__(self):
-        super().__init__()
-        self.sound = None
-        self.fx = (AudioEffectsChain().equalizer(1000, q=2, db=25.0))
+# class EqGame(Game):
+#     def __init__(self):
+#         super().__init__()
+#         self.sound = None
+#         self.fx = (AudioEffectsChain().equalizer(1000, q=2, db=25.0))
+#
+#     def processFile(self):
+#         self.sound = self.getSoundFromRandomFile()[:30 * 1000]
+#         samples = self.sound.get_array_of_samples()
+#         self.proc_sound = self.sound._spawn(samples)
+#         self.exportFile()
+#         self.playFile("processed.wav")
+#
+#     def test(self):
+#         # cut file
+#         self.sound = self.getSoundFromRandomFile()
+#         self.proc_sound = self.sound[:30 * 1000]
+#         self.exportFile()
+#         self.fx("processed.wav", "processed_1.wav")
+#         self.playFile("processed_1.wav")
 
-    def processFile(self):
-        self.sound = self.getSoundFromRandomFile()[:30 * 1000]
-        samples = self.sound.get_array_of_samples()
-        self.proc_sound = self.sound._spawn(samples)
-        self.exportFile()
-        self.playFile("processed.wav")
 
-    def test(self):
-        # cut file
-        self.sound = self.getSoundFromRandomFile()
-        self.proc_sound = self.sound[:30 * 1000]
-        self.exportFile()
-        self.fx("processed.wav", "processed_1.wav")
-        self.playFile("processed_1.wav")
-
-
-if __name__ == "__main__":
-    print("Running...")
-    eq = EqGame()
-    # eq.processFile()
-    eq.test()
-    print("Done!")
+# if __name__ == "__main__":
+#     print("Running...")
+#     eq = EqGame()
+#     # eq.processFile()
+#     eq.test()
+#     print("Done!")
